@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HTML Guide for Beginners — Search & Try</title>
+  <style>
+    :root{
+      --bg:#f7fafc; --card:#ffffff; --accent:#2563eb; --muted:#6b7280;
+      --glass: rgba(255,255,255,0.6);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background: linear-gradient(180deg,#eef2ff 0%, #f7fafc 100%);
+      color:#0f172a;
+      line-height:1.5;
+      padding:28px;
+    }
+
+    header{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      margin-bottom:20px;
+    }
+    header h1{
+      margin:0;
+      font-size:20px;
+    }
+    header p{margin:0;color:var(--muted);font-size:14px}
+
+    .layout{
+      display:grid;
+      grid-template-columns: 360px 1fr;
+      gap:18px;
+      align-items:start;
+    }
+
+    /* Left column: search + contents list */
+    .left {
+      position:relative;
+    }
+    .search {
+      background:var(--card);
+      padding:12px;
+      border-radius:12px;
+      box-shadow:0 4px 12px rgba(2,6,23,0.06);
+    }
+    .search input{
+      width:100%;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid #e6edf3;
+      font-size:14px;
+    }
+    .results {
+      margin-top:12px;
+      max-height:60vh;
+      overflow:auto;
+      padding-right:6px;
+    }
+    .topic {
+      background:var(--card);
+      padding:12px;
+      border-radius:10px;
+      margin-bottom:10px;
+      border:1px solid #eef2ff;
+    }
+    .topic h3{margin:0 0 6px 0;font-size:15px}
+    .topic p{margin:0;color:var(--muted);font-size:13px}
+    .topic .badge{
+      display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;border:1px solid #e6eefc;color:var(--accent);
+      margin-top:8px;
+    }
+
+    /* Right column: guide + live example */
+    .right{
+      display:grid;
+      grid-template-rows: auto 1fr;
+      gap:14px;
+    }
+    .card{
+      background:var(--card);
+      padding:16px;
+      border-radius:12px;
+      box-shadow:0 6px 18px rgba(2,6,23,0.06);
+    }
+    .guide h2{margin-top:0}
+    .guide-section{margin-bottom:14px; padding:12px; border-radius:8px; border:1px solid #fbfbfb;}
+    .guide-section h4{margin:0 0 6px 0}
+    .guide-section pre{
+      background:#0b1220;color:#e6f0ff;padding:10px;border-radius:6px;overflow:auto;font-size:13px;
+    }
+
+    /* Try-it area */
+    .try-area{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      min-height:280px;
+    }
+    .editor, .preview {
+      border-radius:10px;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+    .editor textarea{
+      width:100%; height:100%; min-height:240px; resize:vertical; padding:12px; border:0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace; font-size:13px;
+    }
+    .editor .controls, .preview .controls {
+      display:flex; gap:8px; padding:10px; align-items:center; background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));
+      border-bottom:1px solid rgba(0,0,0,0.03);
+    }
+    .button {
+      background:var(--accent); color:white; border:0; padding:8px 10px; border-radius:8px; cursor:pointer; font-weight:600;
+    }
+    .button.secondary { background:#0ea5a0; }
+    .hint { color:var(--muted); font-size:13px; margin-left:auto; }
+
+    .preview iframe { width:100%; height:100%; border:0; background:white; display:block; min-height:240px; }
+
+    footer{margin-top:16px;color:var(--muted); font-size:13px}
+    mark{
+      background: #fff1b8;
+      padding: 0 4px;
+      border-radius: 3px;
+    }
+
+    /* highlight results */
+    .highlight { outline: 2px solid rgba(37,99,235,0.12); box-shadow: 0 3px 10px rgba(37,99,235,0.06); }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#a78bfa,#60a5fa);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px">HTML</div>
+    <div>
+      <h1>HTML Guide for Beginners</h1>
+      <p>Search the guide below or try your own HTML using the live editor.</p>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- LEFT: SEARCH + topics -->
+    <aside class="left">
+      <div class="search card" role="search" aria-label="Search the HTML guide">
+        <label for="searchInput" style="display:block;font-weight:600;margin-bottom:8px">Search topics</label>
+        <input id="searchInput" placeholder="Type things like: 'links', 'images', 'form'..." />
+        <div class="results" id="results" aria-live="polite" style="margin-top:12px"></div>
+      </div>
+    </aside>
+
+    <!-- RIGHT: GUIDE + TRY -->
+    <main class="right">
+      <section class="card guide" id="guide">
+        <h2>Quick, friendly guide — what you need to know</h2>
+
+        <div class="guide-section" data-topic="what-is-html">
+          <h4>What is HTML?</h4>
+          <p>HTML (HyperText Markup Language) is the language used to structure web pages. Think of it as the skeleton that tells a browser what pieces (headings, paragraphs, images, links) go where.</p>
+          <pre>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;...&lt;/head&gt;
+  &lt;body&gt;...&lt;/body&gt;
+&lt;/html&gt;</pre>
+        </div>
+
+        <div class="guide-section" data-topic="basic-structure">
+          <h4>Basic structure of an HTML file</h4>
+          <p>Every page usually has the following parts:</p>
+          <ul>
+            <li><strong>&lt;!doctype html&gt;</strong> — tells the browser this is HTML5.</li>
+            <li><strong>&lt;html&gt;</strong> — root element.</li>
+            <li><strong>&lt;head&gt;</strong> — metadata like title, styles, character set.</li>
+            <li><strong>&lt;body&gt;</strong> — visible content on the page.</li>
+          </ul>
+        </div>
+
+        <div class="guide-section" data-topic="headings-paragraphs">
+          <h4>Headings & paragraphs</h4>
+          <p>Use headings &lt;h1&gt;–&lt;h6&gt; for titles and &lt;p&gt; for paragraphs.</p>
+          <pre>&lt;h1&gt;Big title&lt;/h1&gt;
+&lt;h2&gt;Subheading&lt;/h2&gt;
+&lt;p&gt;This is a paragraph.&lt;/p&gt;</pre>
+        </div>
+
+        <div class="guide-section" data-topic="links">
+          <h4>Links (anchors)</h4>
+          <p>Use <code>&lt;a href="URL"&gt;link text&lt;/a&gt;</code> to jump to other pages or sections.</p>
+          <pre>&lt;a href="https://example.com"&gt;Visit example.com&lt;/a&gt;</pre>
+        </div>
+
+        <div class="guide-section" data-topic="images">
+          <h4>Images</h4>
+          <p>Use <code>&lt;img src="file.jpg" alt="description"&gt;</code>. Always add <code>alt</code> for accessibility.</p>
+          <pre>&lt;img src="cat.jpg" alt="A grey cat sleeping"&gt;</pre>
+        </div>
+
+        <div class="guide-section" data-topic="lists">
+          <h4>Lists</h4>
+          <p>Ordered lists (<code>&lt;ol&gt;</code>) and unordered lists (<code>&lt;ul&gt;</code>).</p>
+          <pre>&lt;ul&gt;
+  &lt;li&gt;First item&lt;/li&gt;
+  &lt;li&gt;Second item&lt;/li&gt;
+&lt;/ul&gt;</pre>
+        </div>
+
+        <div class="guide-section" data-topic="forms">
+          <h4>Forms (user input)</h4>
+          <p>Forms collect user info. Use <code>&lt;form&gt;</code> with inputs like text, email, buttons.</p>
+          <pre>&lt;form&gt;
+  &lt;label&gt;Name: &lt;input type="text"&gt;&lt;/label&gt;
+  &lt;button type="submit"&gt;Send&lt;/button&gt;
+&lt;/form&gt;</pre>
+        </div>
+
+        <div class="guide-section" data-topic="tables">
+          <h4>Tables</h4>
+          <p>Tables display tabular data using <code>&lt;table&gt;</code>, <code>&lt;tr&gt;</code>, <code>&lt;td&gt;</code>.</p>
+        </div>
+
+        <div class="guide-section" data-topic="attributes">
+          <h4>Attributes</h4>
+          <p>Tags can have extra information called attributes, like <code>href</code>, <code>src</code>, <code>alt</code>, <code>class</code>, and <code>id</code>.</p>
+        </div>
+
+        <div class="guide-section" data-topic="semantics">
+          <h4>Semantic tags</h4>
+          <p>Use semantic elements like &lt;header&gt;, &lt;nav&gt;, &lt;main&gt;, &lt;article&gt;, &lt;footer&gt; to describe meaning — this helps accessibility and search engines.</p>
+        </div>
+
+        <div class="guide-section" data-topic="example">
+          <h4>Complete simple example</h4>
+          <p>Here's a minimal working page you can copy into the editor to try:</p>
+          <pre>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;title&gt;My first page&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Hello, world!&lt;/h1&gt;
+    &lt;p&gt;This is my first HTML page.&lt;/p&gt;
+    &lt;a href="https://example.com"&gt;A link&lt;/a&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+        </div>
+      </section>
+
+      <!-- TRY area -->
+      <section class="card">
+        <h2>Try it — live example</h2>
+        <p style="color:var(--muted);margin-top:6px">Edit the HTML on the left and press <strong>Render</strong> to see how it looks on the right.</p>
+
+        <div class="try-area">
+          <div class="editor">
+            <div class="controls">
+              <button class="button" id="renderBtn" title="Render the HTML">Render</button>
+              <button class="button secondary" id="resetBtn" title="Reset to example">Reset</button>
+              <span class="hint">The preview runs only the HTML you provide</span>
+            </div>
+            <textarea id="editor" aria-label="HTML editor">
+// Paste or edit HTML here
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Simple Example</title>
+  </head>
+  <body>
+    <h1>Welcome 👋</h1>
+    <p>This is a live preview. Try changing this paragraph.</p>
+    <ul>
+      <li>Make a change</li>
+      <li>Click Render</li>
+    </ul>
+  </body>
+</html>
+            </textarea>
+          </div>
+
+          <div class="preview">
+            <div class="controls">
+              <strong>Preview</strong>
+              <span style="margin-left:auto;color:var(--muted);font-size:13px">Safe: scripts are allowed but run in the iframe's context</span>
+            </div>
+            <iframe id="previewIframe" sandbox="allow-same-origin"></iframe>
+          </div>
+        </div>
+
+        <footer>
+          Tip: If you want to include images, use a full URL (e.g. <code>https://example.com/cat.jpg</code>) or a local path when opening the file from your computer.
+        </footer>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Data: list of topics (auto-derived from guide sections) ----------
+    const sections = Array.from(document.querySelectorAll('.guide-section'));
+
+    // Populate the left "results" panel with a list of topics
+    const resultsEl = document.getElementById('results');
+    function populateResults() {
+      resultsEl.innerHTML = '';
+      sections.forEach(sec => {
+        const topic = sec.getAttribute('data-topic') || 'topic';
+        const title = sec.querySelector('h4')?.innerText || 'Untitled';
+        const excerpt = sec.querySelector('p')?.innerText || '';
+        const card = document.createElement('div');
+        card.className = 'topic';
+        card.tabIndex = 0;
+        card.innerHTML = '<h3>'+title+'</h3><p>'+excerpt.slice(0,140)+'</p><div class="badge">'+topic.replace(/-/g,' ')+'</div>';
+        card.addEventListener('click', ()=> {
+          // scroll to the section and highlight it
+          sec.scrollIntoView({behavior:'smooth', block:'center'});
+          sec.classList.add('highlight');
+          setTimeout(()=> sec.classList.remove('highlight'), 2000);
+        });
+        resultsEl.appendChild(card);
+      });
+    }
+    populateResults();
+
+    // ---------- Search logic ----------
+    const input = document.getElementById('searchInput');
+    input.addEventListener('input', (e) => {
+      const q = (e.target.value || '').trim().toLowerCase();
+      const any = q.length === 0;
+      sections.forEach(sec => {
+        const text = (sec.innerText || '').toLowerCase();
+        if (any || text.includes(q)) {
+          sec.style.display = '';
+          // highlight matched words inside the section (simple)
+          if (q && q.length>0) {
+            highlightTextInElement(sec, q);
+          } else {
+            removeHighlights(sec);
+          }
+        } else {
+          sec.style.display = 'none';
+          removeHighlights(sec);
+        }
+      });
+
+      // Also update left results ordering: show matched topics first
+      const topicCards = Array.from(resultsEl.children);
+      topicCards.forEach(card => {
+        const title = card.querySelector('h3').innerText.toLowerCase();
+        if (!q || title.includes(q)) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+
+    function highlightTextInElement(el, keyword) {
+      // Remove previous highlights
+      removeHighlights(el);
+      if (!keyword) return;
+      // Walk text nodes and wrap matches in <mark>
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+      const nodes = [];
+      while(walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach(node => {
+        const val = node.nodeValue;
+        const idx = val.toLowerCase().indexOf(keyword);
+        if (idx >= 0 && node.parentNode && node.parentNode.nodeName !== 'PRE') {
+          const span = document.createElement('span');
+          const before = document.createTextNode(val.slice(0, idx));
+          const match = document.createElement('mark');
+          match.textContent = val.slice(idx, idx + keyword.length);
+          const after = document.createTextNode(val.slice(idx + keyword.length));
+          span.appendChild(before);
+          span.appendChild(match);
+          span.appendChild(after);
+          node.parentNode.replaceChild(span, node);
+        }
+      });
+    }
+    function removeHighlights(el) {
+      const marks = el.querySelectorAll('mark');
+      marks.forEach(m => {
+        const text = document.createTextNode(m.textContent);
+        m.replaceWith(text);
+      });
+      // Also flatten nested spans created earlier (simple approach)
+      el.querySelectorAll('span').forEach(sp => {
+        if (sp.parentNode && sp.childNodes.length === 1 && sp.childNodes[0].nodeType === Node.TEXT_NODE) {
+          sp.replaceWith(sp.childNodes[0]);
+        }
+      });
+    }
+
+    // ---------- Live preview (render) ----------
+    const renderBtn = document.getElementById('renderBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const editor = document.getElementById('editor');
+    const iframe = document.getElementById('previewIframe');
+
+    function renderPreview() {
+      const code = editor.value;
+      // Write the HTML into the iframe document
+      try {
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(code);
+        doc.close();
+      } catch (err) {
+        // In some browsers sandbox settings may restrict; fallback to srcdoc if available
+        try {
+          iframe.setAttribute('srcdoc', code);
+        } catch (e) {
+          alert('Preview failed due to browser restrictions.');
+        }
+      }
+    }
+
+    renderBtn.addEventListener('click', renderPreview);
+    // Reset to starter content
+    resetBtn.addEventListener('click', ()=> {
+      const starter = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Simple Example</title>
+  </head>
+  <body>
+    <h1>Welcome 👋</h1>
+    <p>This is a live preview. Try changing this paragraph.</p>
+    <ul>
+      <li>Make a change</li>
+      <li>Click Render</li>
+    </ul>
+  </body>
+</html>`;
+      editor.value = starter;
+      renderPreview();
+    });
+
+    // Render initial content on load
+    window.addEventListener('load', ()=> {
+      setTimeout(renderPreview, 50);
+    });
+
+    // Allow Enter to trigger a quick search highlight (optional)
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        // find first visible section and highlight
+        const q = input.value.trim().toLowerCase();
+        if (!q) return;
+        const match = sections.find(s => (s.innerText || '').toLowerCase().includes(q));
+        if (match) {
+          match.scrollIntoView({behavior:'smooth', block:'center'});
+          match.classList.add('highlight');
+          setTimeout(()=> match.classList.remove('highlight'), 1800);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
